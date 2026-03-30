@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+:root {
+    --theme-lightest: #EFF4FD;
+    --theme-light: #DBE6F9;
+    --theme-normal: #C6D5F2;
+    --theme-saturated: #AEC3E9;
+    --theme-most-saturated: #8CA8DB;
+}
+
+html {
+    font-size: 14pt;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--theme-lightest);
+}
+
+body {
+    background-color: var(--theme-light);
+
+    margin: 0;
+    justify-self: center;
+    display: grid;
+    grid-template-rows: max-content auto max-content;
+
+    min-height: 100vh;
+}
+
+@media screen and (max-width: 750px) {
+    body {
+        width: 100%;
+    }
+}
+
+@media screen and (min-width: 750px) {
+    body {
+        width: 750px;
+    }
+}
+
+h1 {
+    margin: 0;
+    font-weight: normal;
+    text-decoration: underline;
+}
+
+h2 {
+    margin: 0.25em;
+    font-weight: normal;
+    text-decoration: underline;
+    font-size: 1.5em;
+}
+
+header {
+    padding: 0.25em 1.5em;
+}
+
+hr {
+    width: 95%;
+    height: 0;
+    border: 0.1em solid var(--theme-most-saturated);
+    border-radius: 0.1em;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+}
+
+.panel {
+    padding: 0 1.5em;
+    margin: 0.5em 0;
+}
+
+nav, footer {
+    padding: 0.75em 1em;
+    background-color: var(--theme-normal);
+    max-height: fit-content;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+}
+
+nav h1 {
+    flex: auto;
+}
+
+nav > ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li a, nav ul li span { 
+    display: block; 
+    padding: 0.5rem; 
+}
+
+footer {
+    align-self: end;
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/timer.css">
+    <link rel="stylesheet" href="css/tasks.css">
+
+    <script src="js/timer.js" defer></script>
+    <script src="js/task.js" defer></script>
+
+    <title>Focus Timer - Diachrony</title>
+</head>
+<body>
+    <nav>
+        <h1>Diachrony</h1>
+    </nav>
+    <section class="content">
+        <header>
+            <h2>Focus Timer</h2>
+         </header>
+
+        <div class="panel timer-panel">
+            <div class="timer" id="timer">
+                <span class="minutes" id="minutes">25</span>
+                <span class="colon">:</span>
+                <span class="seconds" id="seconds">00</span>
+            </div>
+            <div class="controls">
+                <button id="switch-button" type="button">
+                    start
+                </button>
+                <button id="reset-button" type="button">
+                    reset
+                </button>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="panel current-task-panel">
+            <div class="current-task-header">
+                Current task:
+            </div>
+            <div class="current-task no-task" id="current-task">
+                No task
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="panel add-task-panel">
+            <input type="text" name="New task" id="new-task-input" class="new-task" placeholder="New task">
+            <button class="add" id="add-task-button">
+                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 8V16M8 12H16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+
+
+        <div class="panel task-panel">
+            <div class="active-task-panel" id="active-task-list" data-status="active">
+            </div>
+
+            <hr class="task-divider">
+
+            <div class="completed-task-panel" id="completed-task-list" data-status="completed">
+            </div>
+        </div>
+    </section>
+    <footer>
+        Mikhail Troshkin, 2026
+    </footer>
+</body>
+</html>
