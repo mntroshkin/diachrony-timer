@@ -19,6 +19,7 @@ body {
     padding: 0;
     display: grid;
     grid-template-rows: auto auto auto;
+    min-height: 100vh;
 }
 
 .content, header, footer {
@@ -33,12 +34,6 @@ body {
     margin: 0;
     display: grid;
     grid-template-rows: auto;
-}
-
-@media screen and (max-width: 750px) {
-    .content, header, footer {
-        width: 100%;
-    }
 }
 
 @media screen and (min-width: 750px) {
