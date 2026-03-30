@@ -14,7 +14,7 @@
 .current-task {
     padding: 0;
     margin: 0;
-    justify-self: center;
+    text-align: center;
     font-size: 1.25em;
     height: 1.25em;
 }
