@@ -195,7 +195,7 @@ class TaskUI {
         taskElement.deleteButton.innerHTML = trashcan;
         taskElement.deleteButton.addEventListener("click", () => this.taskManager.deleteTask(task.id) );
 
-        [taskElement.completeButton, taskElement.timeTracker, taskElement.taskButton, taskElement.deleteButton].forEach(
+        [taskElement.completeButton, taskElement.taskButton, taskElement.timeTracker, taskElement.deleteButton].forEach(
             button => taskElement.taskContainer.appendChild(button)
         );
 
