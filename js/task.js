@@ -4,7 +4,6 @@ const reverse = '<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none"
 
 class TaskManager {
     constructor(timer) {
-        this.nextId = 0;
         this.tasks = new Map(); // id -> task object
         this.selectedTaskId = null;
         this.timer = timer;
@@ -26,7 +25,6 @@ class TaskManager {
 
     loadFromStorage() {
         const taskArray = JSON.parse(localStorage.getItem('tasks') || '[]');
-        this.nextId = Math.max(0, Math.max(taskArray.map(task => task.id))) + 1;
         this.tasks = new Map(taskArray.map(task => [task.id, task]));
     }
 
@@ -39,16 +37,22 @@ class TaskManager {
         this.listeners.forEach(listener => listener(action));
     }
 
+    nextId() {
+        if (this.tasks.size === 0) {
+            return 1;
+        }
+        return Math.max(...this.tasks.keys()) + 1;
+    }
+
     addTask(text) {
         const task = {
-            id: this.nextId,
+            id: this.nextId(),
             text: text,
             status: "active",
             createdAt: new Date(),
             trackedTime: 0,
         }
-        this.tasks.set(this.nextId, task);
-        this.nextId++;
+        this.tasks.set(this.nextId(), task);
         this.notify({ type: "task-added", task: task });
         this.saveToStorage();
     }
@@ -204,7 +208,7 @@ class TaskUI {
     }
 
     createTaskFromInput() {
-        const defaultName = "Task #" + this.taskManager.nextId
+        const defaultName = "Task #" + this.taskManager.nextId();
         const newTaskName = (this.newTaskInput.value) ? this.newTaskInput.value : defaultName;
         this.newTaskInput.value = "";
         this.taskManager.addTask(newTaskName);
