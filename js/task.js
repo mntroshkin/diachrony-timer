@@ -116,9 +116,8 @@ class TaskUI {
         this.addTaskButton = document.getElementById("add-task-button");
 
         this.addTaskButton.addEventListener("click", () => this.createTaskFromInput());
-        this.newTaskInput.addEventListener("keydown", function(event) {
+        this.newTaskInput.addEventListener("keydown", (event) => {
             if (event.key === "Enter") {
-                event.preventDefault();
                 this.createTaskFromInput();
             }    
         });

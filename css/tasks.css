@@ -13,10 +13,9 @@
 
 .current-task {
     padding: 0;
-    margin: 0;
+    margin-top: 0.5em;
     text-align: center;
     font-size: 1.25em;
-    height: 1.25em;
 }
 
 .current-task.no-task {
@@ -34,13 +33,13 @@
 .new-task, .task, .add, .complete, .delete {
     background-color: var(--theme-lightest);
     border: 1px solid var(--theme-most-saturated);
-    height: 40px;
+    min-height: 40px;
     border-radius: 5px;
 }
 
 .task, .new-task {
     display: inline-flex;
-    justify-items: start;
+    flex-direction: row;
     align-items: center;
 
     flex: auto;
@@ -61,15 +60,14 @@
 .time-tracker {
     font-family: 'Roboto Mono', monospace;
     text-align: center;
-    width: 3.5em;
+    max-width: 4em;
 }
 
 .complete, .delete, .add {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    min-width: 40px;
     padding: 0;
 }
 
