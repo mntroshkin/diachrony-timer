@@ -10,6 +10,7 @@
 
     <script src="js/timer.js" defer></script>
     <script src="js/task.js" defer></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <title>Focus Timer - Diachrony</title>
 </head>
@@ -38,20 +39,26 @@
 
         <hr>
 
-        <div class="panel current-task-panel">
+        <div class="panel current-task-panel" x-data="">
             <div class="current-task-header">
                 Current task:
             </div>
-            <div class="current-task no-task" id="current-task">
-                No task
+            <div class="current-task"
+                :class="($store.tasks.selectedId === null) && 'no-task'"
+                x-text="($store.tasks.selectedId === null) ? 'No task' : $store.tasks.items.get($store.tasks.selectedId).text">
             </div>
         </div>
 
         <hr>
 
-        <div class="panel add-task-panel">
-            <input type="text" name="New task" id="new-task-input" class="new-task" placeholder="New task">
-            <button class="add" id="add-task-button">
+        <div class="panel add-task-panel" x-data="{ newTask: '' }">
+            <input type="text" 
+                    name="New task"
+                    class="new-task"
+                    placeholder="New task"
+                    x-model="newTask"
+                    @keydown.enter="$store.tasks.addTask(newTask); newTask='';">
+            <button class="add" id="add-task-button" @click="$store.tasks.addTask(newTask); newTask='';">
                 <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 8V16M8 12H16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -60,12 +67,46 @@
 
 
         <div class="panel task-panel">
-            <div class="active-task-panel" id="active-task-list" data-status="active">
+             <div x-data="">
+                <template x-for="task in $store.tasks.tasksByStatus('active')">
+                    <div class="task-container">
+                        <button x-html="$store.checkmark" 
+                                class="complete active"
+                                @click="$store.tasks.toggleComplete(task.id)">
+                        </button>
+                        <button x-text="task.text" 
+                                class="task" 
+                                :class="{ 'selected': $store.tasks.selectedId === task.id}"
+                                @click="$store.tasks.toggleSelect(task.id)">
+                        </button>
+                        <button x-html="$store.trashcan"
+                                class="delete"
+                                @click="$store.tasks.deleteTask(task.id)">
+                        </button>
+                    </div>
+                </template>
             </div>
 
             <hr class="task-divider">
 
-            <div class="completed-task-panel" id="completed-task-list" data-status="completed">
+            <div x-data="">
+                <template x-for="task in $store.tasks.tasksByStatus('completed')">
+                    <div class="task-container">
+                        <button x-html="$store.reverse" 
+                                class="complete completed"
+                                @click="$store.tasks.toggleComplete(task.id)">
+                        </button>
+                        <button x-text="task.text" 
+                                class="task completed" 
+                                :class="{'selected': $store.tasks.selectedId === task.id}"
+                                disabled>
+                        </button>
+                        <button x-html="$store.trashcan"
+                                class="delete"
+                                @click="$store.tasks.deleteTask(task.id)">
+                        </button>
+                    </div>
+                </template>
             </div>
         </div>
     </section>
