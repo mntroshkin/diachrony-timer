@@ -22,13 +22,13 @@
 .controls {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    column-gap: 2em;
+    column-gap: 1em;
     justify-self: center;
 }
 
 .controls button {
     height: 2.25em;
-    width: 5.5em;
+    width: 6em;
 
     font-size: 1.25em;
     border-radius: 0.5em;

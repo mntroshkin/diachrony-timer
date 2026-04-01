@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="css/timer.css">
     <link rel="stylesheet" href="css/tasks.css">
 
-    <script src="js/timer.js" defer></script>
     <script src="js/task.js" defer></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
@@ -22,17 +21,16 @@
         <h2>Focus Timer</h2>
 
         <div class="panel timer-panel">
-            <div class="timer" id="timer">
-                <span class="minutes" id="minutes">25</span>
-                <span class="colon">:</span>
-                <span class="seconds" id="seconds">00</span>
+            <div class="timer" id="timer" x-data="">
+                <span class="time" x-text="$store.timer.time()"></span>
             </div>
-            <div class="controls">
-                <button id="switch-button" type="button">
-                    start
+            <div class="controls" x-data="">
+                <button @click="$store.timer.switch()"
+                        x-text="$store.timer.switchText()">
                 </button>
-                <button id="reset-button" type="button">
-                    reset
+                <button @click="$store.timer.reset()"
+                        :disabled="!$store.timer.focusing"
+                        x-text="'finish'">
                 </button>
             </div>
         </div>
@@ -77,6 +75,7 @@
                         <button x-text="task.text" 
                                 class="task" 
                                 :class="{ 'selected': $store.tasks.selectedId === task.id}"
+                                :disabled="$store.timer.focusing"
                                 @click="$store.tasks.toggleSelect(task.id)">
                         </button>
                         <button x-html="$store.trashcan"

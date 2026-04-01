@@ -1,4 +1,72 @@
+const defaultInterval = 25 * 60;
+
+function formatNumber(number) {
+    let zeros_count = 2 - number.toString().length;
+    return "0".repeat(zeros_count) + number.toString();
+}
+
+function formatTime(seconds) {
+    return formatNumber(Math.floor(seconds / 60)) + ":" + formatNumber(seconds % 60);
+}
+
+
 document.addEventListener('alpine:init', () => {
+    Alpine.store('timer', {
+        focusing: false,
+        running: false,
+        defaultInterval: defaultInterval,
+        countdown: defaultInterval,
+        intervalID: null,
+
+        time() {
+            return formatTime(this.countdown);
+        },
+
+        advance() {
+            this.countdown -= 1;
+            if (this.countdown == 0) {
+                this.reset();
+            }
+            Alpine.store('tasks').trackSeconds();
+        },
+
+        start() {
+            this.running = true;
+            this.focusing = true;
+            this.intervalID = setInterval(() => this.advance(), 1000);
+        },
+
+        stop() {
+            this.running = false;
+            if (this.intervalID != null) {
+                clearInterval(this.intervalID);
+                this.intervalID = null;
+            }
+        },
+
+        switch() {
+            if (this.running) { this.stop(); }
+            else { this.start(); }
+        },
+
+        reset() {
+            if (this.focusing){
+                Alpine.store('tasks').trackSession();
+            }
+            this.stop();
+            this.focusing = false;
+            this.countdown = this.defaultInterval;
+        },
+
+        switchText() {
+            if (this.running)
+                return "pause";
+            else {
+                return this.focusing ? "continue" : "start";
+            }
+        }
+    });
+
     Alpine.store('tasks', {
         items: new Map(),
         selectedId: null,
@@ -6,12 +74,6 @@ document.addEventListener('alpine:init', () => {
 
         init() {
             this.loadFromStorage();
-            this.timer.listeners.add((action) => {
-                if (action.type == "timer-advance") { this.trackSeconds(); }
-                if ((action.type == "timer-stop") || (action.type == "timer-complete")) {
-                    this.saveToStorage();
-                }
-            });
         },
 
         loadFromStorage() {
@@ -43,6 +105,7 @@ document.addEventListener('alpine:init', () => {
                 status: "active",
                 createdAt: new Date(),
                 trackedTime: 0,
+                trackedSessions: 0,
             }
             this.items.set(this.nextId(), task);
             this.saveToStorage();
@@ -66,6 +129,7 @@ document.addEventListener('alpine:init', () => {
             const targetStatus = (sourceStatus == "active") ? "completed" : "active";
             if ((sourceStatus == "active") && (id == this.selectedId)) {
                 this.toggleSelect(id);
+                Alpine.store('timer').reset();
             }
             this.items.get(id).status = targetStatus;
             this.saveToStorage();
@@ -74,6 +138,12 @@ document.addEventListener('alpine:init', () => {
         trackSeconds() {
             if (this.selectedId !== null) {
                 this.items.get(this.selectedId).trackedTime++;
+            }
+        },
+
+        trackSession() {
+            if (this.selectedId !== null) {
+                this.items.get(this.selectedId).trackedSessions++;
             }
         }
     });
