@@ -48,7 +48,8 @@
         <hr>
 
         <div class="panel add-task-panel" x-data="{ newTask: '' }">
-            <input type="text" 
+            <input type="text"
+                    size="15"
                     name="New task"
                     class="new-task"
                     placeholder="New task"
@@ -69,15 +70,12 @@
                     :class="{ 'selected': $store.tasks.selectedId === task.id}"
                     @click="$store.tasks.toggleSelect(task.id)">
                     <div class="task-container-row">
-                        <button x-html="$store.checkmark" 
-                                class="complete active"
-                                @click.stop="$store.tasks.toggleComplete(task.id)">
-                        </button>
                         <div class="task-text"
                             x-text="task.text"
                             x-show="!expanded">
                         </div>
                         <input class="task-input"
+                                size="15"
                                 x-model="task.text"
                                 x-show="expanded"
                                 @click.stop="">
@@ -89,6 +87,10 @@
                     </div>
                     <div class="task-container-row"
                         x-show="expanded">
+                        <button x-html="$store.checkmark" 
+                                class="complete active"
+                                @click.stop="$store.tasks.toggleComplete(task.id)">
+                        </button>
                         <span class="tracked-time"
                             x-text="`Sessions tracked: ${ task.trackedSessions } (${ formatTime(task.trackedTime) })`">
                         </span>
@@ -108,15 +110,12 @@
                 <div class="task-container"
                     x-data="{ expanded: false }">
                     <div class="task-container-row">
-                        <button x-html="$store.reverse" 
-                                class="complete completed"
-                                @click.stop="$store.tasks.toggleComplete(task.id)">
-                        </button>
                         <div class="task-text completed"
                             x-text="task.text"
                             x-show="!expanded">
                         </div>
                         <input class="task-input"
+                                size="15"
                                 x-model="task.text"
                                 x-show="expanded"
                                 @click.stop="">
@@ -128,6 +127,10 @@
                     </div>
                     <div class="task-container-row"
                         x-show="expanded">
+                        <button x-html="$store.reverse" 
+                                class="complete completed"
+                                @click.stop="$store.tasks.toggleComplete(task.id)">
+                        </button>
                         <span class="tracked-time"
                             x-text="`Sessions tracked: ${ task.trackedSessions } (${ formatTime(task.trackedTime) })`">
                         </span>

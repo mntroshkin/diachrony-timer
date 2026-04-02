@@ -172,8 +172,9 @@ footer div {
     align-items: center;
 
     flex: auto;
+    min-width: 0;
     font-size: 1.2em;
-    padding: 0 5px;
+    padding: 0 7px;
     font-family: 'Inter', sans-serif;
 }
 
@@ -205,6 +206,7 @@ button svg {
 }
 
 .delete {
+    margin-left: auto;
     color: crimson;
 }
 
