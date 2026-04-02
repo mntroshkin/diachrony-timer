@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/timer.css">
-    <link rel="stylesheet" href="css/tasks.css">
 
     <script src="js/task.js" defer></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -62,49 +60,83 @@
                 </svg>
             </button>
         </div>
-
-
+        
         <div class="panel task-panel">
              <div x-data="">
-                <template x-for="task in $store.tasks.tasksByStatus('active')">
-                    <div class="task-container">
+                <template x-for="task in $store.tasks.tasksByStatus('active')" :key="task.id">
+                <div class="task-container"
+                    x-data="{ expanded: false }"
+                    :class="{ 'selected': $store.tasks.selectedId === task.id}"
+                    @click="$store.tasks.toggleSelect(task.id)">
+                    <div class="task-container-row">
                         <button x-html="$store.checkmark" 
                                 class="complete active"
-                                @click="$store.tasks.toggleComplete(task.id)">
+                                @click.stop="$store.tasks.toggleComplete(task.id)">
                         </button>
-                        <button x-text="task.text" 
-                                class="task" 
-                                :class="{ 'selected': $store.tasks.selectedId === task.id}"
-                                :disabled="$store.timer.focusing"
-                                @click="$store.tasks.toggleSelect(task.id)">
-                        </button>
-                        <button x-html="$store.trashcan"
-                                class="delete"
-                                @click="$store.tasks.deleteTask(task.id)">
+                        <div class="task-text"
+                            x-text="task.text"
+                            x-show="!expanded">
+                        </div>
+                        <input class="task-input"
+                                x-model="task.text"
+                                x-show="expanded"
+                                @click.stop="">
+                        </input>
+                        <button x-html="expanded ? $store.uparrow : $store.downarrow"
+                                class="expand"
+                                @click.stop="expanded = !expanded">
                         </button>
                     </div>
+                    <div class="task-container-row"
+                        x-show="expanded">
+                        <span class="tracked-time"
+                            x-text="`Sessions tracked: ${ task.trackedSessions } (${ formatTime(task.trackedTime) })`">
+                        </span>
+                        <button x-html="$store.trashcan"
+                                class="delete"
+                                @click.stop="$store.tasks.deleteTask(task.id)">
+                        </button>
+                    </div>
+                </div>
                 </template>
             </div>
 
             <hr class="task-divider">
 
-            <div x-data="">
-                <template x-for="task in $store.tasks.tasksByStatus('completed')">
-                    <div class="task-container">
+             <div x-data="">
+                <template x-for="task in $store.tasks.tasksByStatus('completed')" :key="task.id">
+                <div class="task-container"
+                    x-data="{ expanded: false }">
+                    <div class="task-container-row">
                         <button x-html="$store.reverse" 
                                 class="complete completed"
-                                @click="$store.tasks.toggleComplete(task.id)">
+                                @click.stop="$store.tasks.toggleComplete(task.id)">
                         </button>
-                        <button x-text="task.text" 
-                                class="task completed" 
-                                :class="{'selected': $store.tasks.selectedId === task.id}"
-                                disabled>
-                        </button>
-                        <button x-html="$store.trashcan"
-                                class="delete"
-                                @click="$store.tasks.deleteTask(task.id)">
+                        <div class="task-text completed"
+                            x-text="task.text"
+                            x-show="!expanded">
+                        </div>
+                        <input class="task-input"
+                                x-model="task.text"
+                                x-show="expanded"
+                                @click.stop="">
+                        </input>
+                        <button x-html="expanded ? $store.uparrow : $store.downarrow"
+                                class="expand"
+                                @click.stop="expanded = !expanded">
                         </button>
                     </div>
+                    <div class="task-container-row"
+                        x-show="expanded">
+                        <span class="tracked-time"
+                            x-text="`Sessions tracked: ${ task.trackedSessions } (${ formatTime(task.trackedTime) })`">
+                        </span>
+                        <button x-html="$store.trashcan"
+                                class="delete"
+                                @click.stop="$store.tasks.deleteTask(task.id)">
+                        </button>
+                    </div>
+                </div>
                 </template>
             </div>
         </div>
