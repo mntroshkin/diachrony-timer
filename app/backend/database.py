@@ -6,8 +6,9 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from .models import Base
 
+DATABASE_URL = "postgresql+psycopg://postgres:mypassword@db:5432/diachrony"
 
-engine = create_engine("sqlite:///diachrony.db", echo=True)
+engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 

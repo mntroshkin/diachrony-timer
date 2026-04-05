@@ -6,7 +6,7 @@ function formatNumber(number) {
 }
 
 function formatTime(seconds) {
-    return formatNumber(Math.floor(seconds / 60)) + ":" + formatNumber(seconds % 60);
+    return formatNumber(Math.floor(seconds / 60)) + ":" + formatNumber(Math.floor(seconds) % 60);
 }
 
 
@@ -17,20 +17,24 @@ document.addEventListener('alpine:init', () => {
         defaultInterval: defaultInterval,
         countdown: defaultInterval,
         intervalID: null,
+        started_at: null,
+        duration: null,
 
         time() {
             return formatTime(this.countdown);
         },
 
         advance() {
+            this.duration += 1;
             this.countdown -= 1;
             if (this.countdown == 0) {
                 this.reset();
             }
-            Alpine.store('tasks').trackSeconds();
         },
 
         start() {
+            this.started_at = new Date();
+            this.duration = 0;
             this.running = true;
             this.focusing = true;
             this.intervalID = setInterval(() => this.advance(), 1000);
@@ -51,9 +55,11 @@ document.addEventListener('alpine:init', () => {
 
         reset() {
             if (this.focusing){
-                Alpine.store('tasks').trackSession();
+                Alpine.store('tasks').trackSession(this.started_at, new Date(), this.duration);
             }
             this.stop();
+            this.started_at = null;
+            this.duration = 0;
             this.focusing = false;
             this.countdown = this.defaultInterval;
         },
@@ -70,82 +76,89 @@ document.addEventListener('alpine:init', () => {
     Alpine.store('tasks', {
         items: new Map(),
         selectedId: null,
-        timer: timer,
 
-        init() {
-            this.loadFromStorage();
-        },
-
-        loadFromStorage() {
-            const taskArray = JSON.parse(localStorage.getItem('tasks') || '[]');
-            this.items = new Map(taskArray.map(task => [task.id, task]));
-        },
-
-        saveToStorage() {
-            const taskArray = Array.from(this.items.values());
-            localStorage.setItem('tasks', JSON.stringify(taskArray));
-        },
-
-        tasksByStatus(status) {
-            return Array.from(this.items.values()).filter(task => task.status === status);
-        },
-
-        nextId() {
-            if (this.items.size === 0) {
-                return 1;
+        async init() {
+            const response = await taskService.getAll();
+            if (response.status == 200) {
+                const taskArray = response.data;
+                this.items = new Map(taskArray.map((task) => [task.id, task]));
             }
-            return Math.max(...this.items.keys()) + 1;
         },
 
-        addTask(text) {
-            text = (text.length === 0) ? `Task #${ this.nextId() }` : text;
-            const task = {
-                id: this.nextId(),
-                text: text,
-                status: "active",
-                createdAt: new Date(),
-                trackedTime: 0,
-                trackedSessions: 0,
+        tasksByCompletion(status) {
+            return Array.from(this.items.values()).filter(task => task.completed === status);
+        },
+
+        currentTaskText() {
+            return (this.selectedId === null) ? 'No task' : this.items.get(this.selectedId).task_text
+        },
+
+        async refreshTask(id) {
+            const response = await taskService.getOne(id);
+            if (response.status == 200) {
+                const task = response.data;
+                this.items.set(id, task);
             }
-            this.items.set(this.nextId(), task);
-            this.saveToStorage();
         },
 
-        deleteTask(id) {
-            if (this.selectedId == id) {
+        async addTask(task_text) {
+            task_text = (task_text.length === 0) ? "New task" : task_text;
+            const data = {
+                task_text: task_text,
+                completed: false,
+            }
+            const response = await taskService.create(data);
+            if (response.status == 201) {
+                const task = response.data;
+                this.items.set(task.id, task);
+            }
+        },
+
+        async updateTask(id, data) {
+            const response = await taskService.update(id, data);
+            if (response.status == 200) {
+                const task = response.data;
+                this.items.set(task.id, task);
+            }
+        },
+
+        async deleteTask(id) {
+            if (id == this.selectedId) {
                 this.toggleSelect(id);
             }
-            this.items.delete(id);
-            this.saveToStorage();
+            const response = await taskService.delete(id);
+            if (response.status == 204) {
+                this.items.delete(id);
+            }
         },
 
         toggleSelect(id) {
             this.selectedId = (this.selectedId == id) ? null : id;
-            this.saveToStorage();
         },
 
-        toggleComplete(id) {
-            const sourceStatus = this.items.get(id).status;
-            const targetStatus = (sourceStatus == "active") ? "completed" : "active";
-            if ((sourceStatus == "active") && (id == this.selectedId)) {
+        async toggleComplete(id) {
+            const task = this.items.get(id);
+            if ((task.completed == false) && (id == this.selectedId)) {
                 this.toggleSelect(id);
-                Alpine.store('timer').reset();
             }
-            this.items.get(id).status = targetStatus;
-            this.saveToStorage();
+            await this.updateTask(id, {
+                task_text: task.task_text,
+                completed: !task.completed,
+            });
         },
 
-        trackSeconds() {
-            if (this.selectedId !== null) {
-                this.items.get(this.selectedId).trackedTime++;
+        async trackSession(started_at, finished_at, duration) {
+            const id = this.selectedId;
+            if (id !== null) {
+                timer_session = {
+                    task_id: id,
+                    started_at: started_at,
+                    finished_at: finished_at,
+                    duration: duration
+                }
+                const response = await sessionService.create(timer_session);
+                if (response.status == 201) { await this.refreshTask(id); }
             }
-        },
-
-        trackSession() {
-            if (this.selectedId !== null) {
-                this.items.get(this.selectedId).trackedSessions++;
-            }
-            this.saveToStorage();
         }
     });
 

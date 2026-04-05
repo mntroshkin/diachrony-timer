@@ -13,6 +13,8 @@ class TaskCreate(TaskBase):
 class TaskOut(TaskBase):
     id: int
     created_at: datetime
+    tracked_time: float
+    tracked_sessions: int
 
     class Config:
         from_attributes = True

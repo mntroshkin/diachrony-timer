@@ -7,7 +7,7 @@ from ..database import get_session
 
 router = APIRouter(prefix='/api/sessions', tags=['Sessions'])
 
-@router.get('/', response_model=list[schemas.TimerSessionOut])
+@router.get('', response_model=list[schemas.TimerSessionOut])
 def get_timer_sessions(task_id: Optional[int] = None, session: Session = Depends(get_session)):
     """Get all sessions. If task id is provided, get all sessions for that task."""
     
@@ -22,7 +22,7 @@ def get_timer_sessions(task_id: Optional[int] = None, session: Session = Depends
     return [schemas.TimerSessionOut.model_validate(timer_session) for timer_session in timer_sessions]
 
 
-@router.post('/', status_code=201, response_model=schemas.TimerSessionOut)
+@router.post('', status_code=201, response_model=schemas.TimerSessionOut)
 def create_timer_session(new_timer_session: schemas.TimerSessionCreate,
                          session: Session = Depends(get_session)):
     

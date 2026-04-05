@@ -6,7 +6,7 @@ from ..database import get_session
 
 router = APIRouter(prefix='/api/tasks', tags=['Tasks'])
 
-@router.get('/', response_model=list[schemas.TaskOut])
+@router.get('', response_model=list[schemas.TaskOut])
 def get_tasks(session: Session = Depends(get_session)) -> list[schemas.TaskOut]:
     """Get all tasks"""
 
@@ -14,7 +14,7 @@ def get_tasks(session: Session = Depends(get_session)) -> list[schemas.TaskOut]:
     return [schemas.TaskOut.model_validate(task) for task in tasks]
 
 
-@router.post('/', status_code=201, response_model=schemas.TaskOut)
+@router.post('', status_code=201, response_model=schemas.TaskOut)
 def create_task(new_task: schemas.TaskCreate, session: Session = Depends(get_session)) -> schemas.TaskOut:
     task = models.Task(**new_task.model_dump())
     session.add(task)
