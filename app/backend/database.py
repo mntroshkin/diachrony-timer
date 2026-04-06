@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Generator
 
 from sqlalchemy import create_engine
